@@ -1,5 +1,6 @@
 import turtle, math
 from game import *
+import random
 NUM_SQUARES = 8 # The number of squares on each row.
 SQUARE = 50 # The size of each square in the checkerboard.
 SQUARE_COLORS = ("light gray", "white")
@@ -16,12 +17,10 @@ class Game_UI():
     '''
         class Game_UI
         Attributes:
-            turtle -- 
-            game --
-            board --
-            init_board() --
-        Method:
-            init_board
+            turtle -- turtle object that will draw the game UI
+            game -- game object that perform all calculation and moves
+            board -- a 8x8 matrix that represent the game board
+            init_board() -- initialize the board when game starts
     '''
     def __init__(self, game):
         self.turtle = turtle
@@ -56,7 +55,13 @@ class Game_UI():
 
     def update_board(self):
         '''
-            Method update_board
+            Method update_board:
+                This method will draw all square and piece on the board when
+                initialization happens
+            Parameters:
+                self -- current game UI object
+            Returns:
+                None. Draw squares and pieces on the game board
         '''
         board = self.game.board
         for i in range(len(board)):
@@ -96,13 +101,15 @@ class Game_UI():
     def convert_index_to_coordinates(self, x, y):
         '''
             Method convert_index_to_coordinates:
-                This method 
+                This method convert row and column index to x and y coordinates
+                on the game canvas, which helps turtle object to draw stuff
+                (update the game UI)
             Parameters:
-                self --
-                x --
-                y --
+                self -- current game UI object
+                x -- row index of current clicked position
+                y -- column index of current clicked position
             Returns:
-                a list contains row and col index.
+                a list contains x and y coordinates.
         '''
         y_pos = CORNER + x * SQUARE
         x_pos = CORNER + y * SQUARE
@@ -110,6 +117,18 @@ class Game_UI():
 
 
     def convert_coordinates_to_index(self, x, y):
+        '''
+            Method convert_coordinates_to_index:
+                This method convert x and y coordinates from click handler to
+                row and column indexes for the game board
+            Parameters:
+                self -- current game UI object
+                x -- x coordinates passed by another function
+                y -- y coordinates passed by another function
+            Returns:
+                Return a list containing row and column index for this game
+                board. In a form [x, y]
+        '''
         if (x >= CORNER and x <= -CORNER) and (y >= CORNER and y <= -CORNER):
             return [math.floor(y / 50) + 4, math.floor(x / 50) + 4]
         else:
@@ -119,8 +138,8 @@ class Game_UI():
     def get_back_ground_color(self, x,y):
         '''
             Function get_back_ground_color:
-                This Function will return the back ground color from given
-                x and y position
+                This Function will return the back ground color of the squre 
+                from given x and y position
             Parameters:
                 x -- row index for current piece
                 y -- col index for current piece
@@ -134,6 +153,19 @@ class Game_UI():
     
 
     def draw_piece(self, a_turtle, color, x, y):
+        '''
+            Method draw_piece:
+                This method draw a piece based on its x, y position and its
+                value. If it is a red piece, it will fill the piece with red
+                color. If it is a black piece, it will fill the piece with
+                black color
+            Parameters:
+                self -- current game UI object
+                a_turtle -- turtle object that is being used to draw this piece
+                color -- color for the perimeter of the circle.
+                x -- x position of this piece
+                y -- y position of this piece
+        '''
         y_pos = CORNER + x * SQUARE
         x_pos = CORNER + y * SQUARE
         x_pos += SQUARE / 2
@@ -173,6 +205,17 @@ class Game_UI():
     
 
     def highlight(self, x, y):
+        '''
+            Method highlight:
+                This method highlight the selected piece and its potential
+                move
+            Parameters:
+                self -- current gameUI object
+                x -- x position of selected piece
+                y -- y position of selected piece
+            Returns:
+                None. Only update game UI and won't return anything
+        '''
         poten_move = self.potential_move(x, y)
         if (self.game.board[x][y] == 0):
             self.draw_square(self.pen, "red", SQUARE, x, y)
@@ -184,6 +227,17 @@ class Game_UI():
                 self.draw_square(self.pen, "red", SQUARE, pos_x, pos_y)
 
     def unhighlight(self, x, y):
+        '''
+            Method unhighlight:
+                This method unhighlight the piece and its potential move when
+                player clicked somewhere else.
+            Parameters:
+                self -- current gameUI object
+                x -- x position of current clicked position
+                y -- y position of current clicked position
+            Returns:
+                None. Only update the game UI. Won't return anything
+        '''
         poten_move = self.potential_move(x, y)
         if (self.game.board[x][y] == 0):
             self.draw_square(self.pen, "black", SQUARE, x, y)
@@ -195,6 +249,18 @@ class Game_UI():
                 self.draw_square(self.pen, "black", SQUARE, pos_x, pos_y)
 
     def potential_move(self, x, y):
+        '''
+            Method potential_move:
+                This method returns potential moves for current piece selected
+                by player
+            Parameters:
+                self -- current gameUI object
+                x -- x position of current selected piece
+                y -- y position of current selected piece
+            Returns:
+                Returns a list of potential move for current selected piece
+                if capture move is possible, only return the capture moves
+        '''
         reg_move = []
         cap_move = []
         reg_dir = [[1, -1], [1, 1], [-1, -1], [-1, 1]]
@@ -219,7 +285,26 @@ class Game_UI():
             return reg_move
 
 
-
+    def computer_move(self):
+        '''
+            Method computer_move:
+                This method let computer to move red piece by randomly select
+                current available moves.
+            Parameters:
+                self -- current gameUI
+            Returns:
+                A list contains current x,y position of piece it selected and
+                future x, y positions where it want the piece to move to.
+        '''
+        if (self.game.player_turn == RED):
+            # make random move from possible_move
+            cur_possible_move = self.game.possible_move()
+            if (len(cur_possible_move) == 0):
+                return []
+            random_select = random.randrange(len(cur_possible_move))
+            return cur_possible_move[random_select]
+        else:
+            return []
 
     def click_handler(self, x, y):
         '''
@@ -260,17 +345,50 @@ class Game_UI():
             if (self.game.move_success):
                 # clear the square if check move is made
                 print(abs(pos[0] - old_x))
-                if abs(pos[0] - old_x) == 2:
-                    self.draw_square(self.pen, "black", SQUARE,\
-                        (old_x + pos[0]) // 2, (old_y + pos[1]) // 2)
-                    print((old_x + pos[0]) // 2, (old_y + pos[1]) // 2)
-                self.draw_square(self.pen, "black", SQUARE, old_x, old_y)
-                self.draw_square(self.pen, "black", SQUARE, pos[0], pos[1])
-                self.draw_piece(self.pen, "black", pos[0], pos[1])
+                self.update_move(old_x, old_y, pos[0], pos[1])
                 if not self.game.possible_capture_move:
                     self.game.switch_turn()
-                print(self.game.player_turn)
             self.piece_selected = False
+        while (self.game.player_turn == RED):
+            computer_choice = self.computer_move()
+            if len(computer_choice) == 0:
+                self.game.switch_turn()
+                break
+            self.game.move(computer_choice[0], computer_choice[1],\
+                computer_choice[2], computer_choice[3])
+            self.update_move(computer_choice[0], computer_choice[1], computer_choice[2], computer_choice[3])
+            if not self.game.possible_capture_move or len(computer_choice) == 0:
+                    self.game.switch_turn()
+        print("red piece left:" + str(self.game.red_piece))
+        print("black piece left: " + str(self.game.black_piece))
+        if (not self.game.possible_move):
+            print("Game Over, You lose!")
+            return
+        else:
+            if self.game.red_piece == 0:
+                print("Game Over, You win!")
+            return
+        
+
+
+    def update_move(self, old_x, old_y, x, y):
+        '''
+            Method update_move:
+                This method update the board on UI after user has made a move
+            Parameters:
+                self -- current gameUI object
+                old_x -- current piece x position
+                old_y -- cuurent piece y position
+                x -- x position where this piece is moving to
+                y -- y position where this piece is moving to
+        '''
+        if abs(x - old_x) == 2:
+            self.draw_square(self.pen, "black", SQUARE, (old_x + x) // 2, (old_y + y) // 2)
+            print((old_x + x) // 2, (old_y + y) // 2)
+        self.draw_square(self.pen, "black", SQUARE, old_x, old_y)
+        self.draw_square(self.pen, "black", SQUARE, x, y)
+        self.draw_piece(self.pen, "black", x, y)
+
 
 
 

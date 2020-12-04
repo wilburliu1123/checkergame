@@ -188,6 +188,8 @@ class GAME():
         '''
         positions = self.get_pieces_pos()
         print(positions)
+        if (len(positions) == 0):
+            return []
         if self.player_turn == BLACK:
             reg_direction = [[1, -1], [1, 1]]
             capture_direction = [[2, -2], [2, 2]]
@@ -211,7 +213,6 @@ class GAME():
                 capture_direction.append([2, -2])
                 capture_direction.append([2, 2])
             for dir in reg_direction:
-                print(reg_direction)
                 if self.is_valid_move(pos_x, pos_y, pos_x+dir[0], pos_y+dir[1]):
                     reg_moves.append([pos_x, pos_y, pos_x+dir[0],pos_y+dir[1]])
             for dir in capture_direction:
@@ -231,6 +232,19 @@ class GAME():
             
 
     def is_valid_move(self, old_x, old_y, x, y):
+        '''
+            Method is_valid_move:
+                This method is to check given current position of a piece,
+                check wether the future position (x and y) is a valid move
+            Paramters:
+                self -- current game object
+                old_x -- current x position of the piece
+                old_y -- current y position of the piece
+                x -- x position where the piece is going
+                y -- y position where the piece is going
+            Returns:
+                True if the piece can move to the position. False otherwise
+        '''
         dir_x = x - old_x
         dir_y = y - old_y
         if (x < 0 or x > NUM_SQUARES-1) or (y < 0 or y > NUM_SQUARES - 1):
@@ -242,10 +256,10 @@ class GAME():
             return (self.board[old_x][old_y] == BLACK or\
                 self.board[old_x][old_y] == BLACK_KING\
                 or self.board[old_x][old_y] == RED_KING) and abs(dir_y) == 1
-        if (dir_x == -1):
+        if dir_x == -1:
             return (self.board[old_x][old_y] == RED or\
                 self.board[old_x][old_y] == RED_KING\
-                or self.board[x][y] == BLACK_KING) and abs(dir_y) == 1
+                or self.board[old_x][old_y] == BLACK_KING) and abs(dir_y) == 1
         # if it is a capture move, check if it is a valid capture move
         elif dir_x == 2:
             # upward capture move, if it is a red king, check if it is valid
@@ -259,15 +273,18 @@ class GAME():
                 return (dir_y == -2 and\
                     self.board[old_x + 1][old_y - 1] == RED) or\
                         (dir_y == 2 and\
-                            self.board[old_x + 1][old_y + 1] == RED)
-            
+                            self.board[old_x + 1][old_y + 1] == RED) or\
+                    (dir_y == -2 and self.board[old_x + 1][old_y - 1] == RED_KING) or\
+                    (dir_y == 2 and self.board[old_x + 1][old_y + 1] == RED_KING)
         # if it is a downward capture move, check if it is a valid one
         elif dir_x == -2:
             # if it is a black king, check if it is valid
             if self.board[old_x][old_y] == BLACK_KING:
                 return (dir_y == -2 and\
                     self.board[old_x - 1][old_y - 1] == RED)\
-                or (dir_y == 2 and self.board[old_x - 1][old_y + 1] == RED)
+                or (dir_y == 2 and self.board[old_x - 1][old_y + 1] == RED)\
+                or (dir_y == -2 and self.board[old_x-1][old_y-1] == RED_KING)\
+                or (dir_y == 2 and self.board[old_x-1][old_y+1] == RED_KING)
             # if it is a reg red capture move, check if it is valid
             elif self.board[old_x][old_y] == RED_KING or\
                 self.board[old_x][old_y] == RED:
@@ -279,12 +296,17 @@ class GAME():
 
     def get_pieces_pos(self):
         '''
+            Method get_pieces_pos:
+                This method is to get all current play's piece and return x y
+                position as a list
+            Parameters:
+                self -- current game object
+            Returns:
+                A list of current piece position
         '''
         value = self.player_turn
-        print(value)
         if (value == BLACK):
             King = BLACK_KING
-            print(King)
         else:
             King = RED_KING
         pos = []
@@ -294,27 +316,6 @@ class GAME():
                     pos.append([i, j])
         return pos
 
-    def is_enemy(self, cur_pos, destination):
-        '''
-            Function -- is_enemy:
-                This function will return true if the row and col index is
-                pointing an enemy false otherwise
-            Parameters:
-                row -- row index
-                col -- col index
-            Returns:
-                True if the row index is pointing at an enemy
-                False otherwise
-        '''
-        x = cur_pos[0]
-        y = cur_pos[1]
-        des_piece = self.board[destination[0]][destination[1]]
-        if (self.board[x][y] == RED) and des_piece == BLACK:
-            return True
-        elif (self.board[x][y] == BLACK) and des_piece == RED:
-            return True
-        else:
-            return False
     
     # def __str__(self):
     #     '''
