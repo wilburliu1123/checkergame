@@ -22,10 +22,11 @@ class Game_UI():
             board -- a 8x8 matrix that represent the game board
             init_board() -- initialize the board when game starts
     '''
-    def __init__(self, game):
+    def __init__(self):
         self.turtle = turtle
-        self.game = game
+        self.game = GAME()
         self.board = self.game.board
+        self.game_over = False
         self.init_board()
     def init_board(self):
         '''
@@ -38,7 +39,6 @@ class Game_UI():
         '''
         self.window_size = BOARD_SIZE + SQUARE # The extra + SQUARE is the margin
         self.turtle.setup(self.window_size, self.window_size)
-        print(self.board)
         # Set the drawing canvas size. The should be actual board size
         self.turtle.screensize(BOARD_SIZE, BOARD_SIZE)
         self.turtle.bgcolor("white") # The window's background color
@@ -48,8 +48,8 @@ class Game_UI():
         self.update_board()
         self.piece_selected = False
         self.clicked_at = {"row" : 0, "col" : 0, "piece" : None}
-        screen = turtle.Screen()
-        screen.onclick(self.click_handler) # This will call call the click_handler function when a click occurs
+        self.screen = turtle.Screen()
+        self.screen.onclick(self.click_handler) # This will call call the click_handler function when a click occurs
         self.turtle.done() # Stops the window from closing.
 
 
@@ -318,9 +318,11 @@ class Game_UI():
                 of function automatically called by Turtle. You will not have
                 access to anything returned by this function.
         '''
+        if self.game_over:
+            return
         pos = self.convert_coordinates_to_index(x, y)
         if (len(pos) != 0):
-            print("Clicked at ", math.floor(y / 50) + 4, math.floor(x / 50) + 4)
+            print("Clicked at ", math.floor(y / 50)+4, math.floor(x / 50)+4)
         else:
             print("invalid click")
             return
@@ -353,6 +355,12 @@ class Game_UI():
             computer_choice = self.computer_move()
             if len(computer_choice) == 0:
                 self.game.switch_turn()
+                if (self.game.red_piece != 0):
+                    self.write_try_again()
+                    print("Game over. Try again")
+                else:
+                    print("Game over. You win!")
+                self.game_over = True
                 break
             self.game.move(computer_choice[0], computer_choice[1],\
                 computer_choice[2], computer_choice[3])
@@ -361,15 +369,91 @@ class Game_UI():
                     self.game.switch_turn()
         print("red piece left:" + str(self.game.red_piece))
         print("black piece left: " + str(self.game.black_piece))
-        if (not self.game.possible_move):
+        if self.game.red_piece == 0:
+            self.write_win()
+            print("Game Over, You win!")
+            self.game_over = True
+        elif self.game.black_piece == 0:
+            self.write_lose()
             print("Game Over, You lose!")
-            return
-        else:
-            if self.game.red_piece == 0:
-                print("Game Over, You win!")
-            return
-        
+            self.game_over = True
+        elif (not self.game.player_can_continue()):
+            self.write_try_again()
+            print("Game Over, try again!")
+            self.game_over = True
+        return
 
+
+    def write_lose(self):
+        '''
+            Method write_lose:
+                This method write losing message on the board when game is
+                over.
+            Parameters:
+                self -- current gameUI object
+            Returns:
+                None. Drawing message on the board
+        '''
+        self.pen.color("purple")
+        pos = self.convert_index_to_coordinates(5, 1)
+        pos_x = pos[0]
+        pos_y = pos[1]
+        self.pen.setposition(pos_x, pos_y)
+        style = ('Courier', 50, 'italic')
+        self.pen.write('Game Over!', font=style)
+        pos = self.convert_index_to_coordinates(3, 2)
+        pos_x = pos[0]
+        pos_y = pos[1]
+        self.pen.setposition(pos_x, pos_y)
+        self.pen.write('You lose!', font=style)
+
+
+    def write_win(self):
+        '''
+            Method write_win:
+                This method write winning message on the board when game is
+                over.
+            Parameters:
+                self -- current gameUI object
+            Returns:
+                None. Drawing message on the board
+        '''
+        self.pen.color("purple")
+        pos = self.convert_index_to_coordinates(5, 1)
+        pos_x = pos[0]
+        pos_y = pos[1]
+        self.pen.setposition(pos_x, pos_y)
+        style = ('Courier', 50, 'italic')
+        self.pen.write('Game Over!', font=style)
+        pos = self.convert_index_to_coordinates(3, 2)
+        pos_x = pos[0]
+        pos_y = pos[1]
+        self.pen.setposition(pos_x, pos_y)
+        self.pen.write('You win!', font=style)
+    
+
+    def write_try_again(self):
+        '''
+            Method write_try_again:
+                This method write try again message on the board when game is
+                over.
+            Parameters:
+                self -- current gameUI object
+            Returns:
+                None. Drawing message on the board
+        '''
+        self.pen.color("purple")
+        pos = self.convert_index_to_coordinates(5, 1)
+        pos_x = pos[0]
+        pos_y = pos[1]
+        self.pen.setposition(pos_x, pos_y)
+        style = ('Courier', 50, 'italic')
+        self.pen.write('Game Over!', font=style)
+        pos = self.convert_index_to_coordinates(3, 2)
+        pos_x = pos[0]
+        pos_y = pos[1]
+        self.pen.setposition(pos_x, pos_y)
+        self.pen.write('Try Again!', font=style)
 
     def update_move(self, old_x, old_y, x, y):
         '''
@@ -381,6 +465,8 @@ class Game_UI():
                 old_y -- cuurent piece y position
                 x -- x position where this piece is moving to
                 y -- y position where this piece is moving to
+            Returns:
+                None. Update the move on the board
         '''
         if abs(x - old_x) == 2:
             self.draw_square(self.pen, "black", SQUARE, (old_x + x) // 2, (old_y + y) // 2)
@@ -389,12 +475,3 @@ class Game_UI():
         self.draw_square(self.pen, "black", SQUARE, x, y)
         self.draw_piece(self.pen, "black", x, y)
 
-
-
-
-
-def main():
-    GAME()
-
-if __name__ == "__main__":
-    main()

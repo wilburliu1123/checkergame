@@ -8,7 +8,6 @@ state of the game. State of the game will be used to evaluate wether user has
 won or not. There will also be functions that determine if a move is valid
 or not.
 '''
-from game_UI import *
 NUM_SQUARES = 8 # The number of squares on each row.
 ROW = 3 # we need three rows of pieces for each player
 PIECE_COLORS = ("king", "black", "red")
@@ -39,7 +38,6 @@ class GAME():
         self.red_piece = 12
         self.move_success = False
         self.possible_capture_move = False
-        self.UI = Game_UI(self)
 
 
     def init_board(self):
@@ -98,12 +96,7 @@ class GAME():
             return False
         else:
             return True
-    
-    def game_over(self):
-        if self.black_piece == 0 or self.red_piece == 0:
-            return True
-        else:
-            return self.player_can_continue()
+
 
     def get_player_turn(self):
         '''
@@ -115,24 +108,7 @@ class GAME():
                 player turn for current game
         '''
         return self.player_turn
-    
 
-
-    def get_board(self):
-        '''
-            Function get_board:
-                This function will return current game board
-            Parameters:
-                self -- current game object
-            Returns:
-                returns the game board
-        '''
-        print(self.board)
-        return self.board
-    
-
-
-    
 
     def move(self, old_x, old_y, x, y):
         '''
@@ -148,7 +124,6 @@ class GAME():
             Returns:
                 None. Update the game board
         '''
-        print(old_x, old_y, x, y)
         if not self.is_valid_move(old_x, old_y, x, y):
             self.move_success = False
             return
@@ -168,9 +143,9 @@ class GAME():
         if abs(x - old_x) == 2:
             piece = self.board[(old_x + x) // 2][(old_y + y) // 2]
             self.board[(old_x + x) // 2][(old_y + y) // 2] = 0
-            if piece == BLACK:
+            if piece == BLACK or piece == BLACK_KING:
                 self.black_piece -= 1
-            elif piece == RED:
+            elif piece == RED or piece == RED_KING:
                 self.red_piece -= 1
             self.possible_move()
     
@@ -187,7 +162,6 @@ class GAME():
                 return a list of all possible moves for current player
         '''
         positions = self.get_pieces_pos()
-        print(positions)
         if (len(positions) == 0):
             return []
         if self.player_turn == BLACK:
@@ -221,11 +195,17 @@ class GAME():
                         pos_y + dir[1]])
         if capture_moves:
             print("A capture is possible, and it must be made!")
-            print("capture_moves:" + str(capture_moves))
+            print("capture_moves:")
+            for cap_move in capture_moves:
+                print("from [{},{}], to [{}, {}]: ".format(cap_move[0],\
+                    cap_move[1], cap_move[2], cap_move[3]))
             self.possible_capture_move = True
             return capture_moves
         else:
-            print("reg_moves:" + str(reg_moves))
+            print("reg_moves:")
+            for reg_move in reg_moves:
+                print("from [{},{}], to [{}, {}]: ".format(reg_move[0],\
+                    reg_move[1], reg_move[2], reg_move[3]))
             self.possible_capture_move = False
             return reg_moves
 
@@ -266,7 +246,9 @@ class GAME():
             if self.board[old_x][old_y] == RED_KING:
                 return (dir_y == -2 and\
                     self.board[old_x + 1][old_y - 1] == BLACK)\
-                or (dir_y == 2 and self.board[old_x + 1][old_y + 1] == BLACK)
+                or (dir_y == 2 and self.board[old_x + 1][old_y + 1] == BLACK)\
+                or (dir_y == -2 and self.board[old_x + 1][old_y - 1] == BLACK_KING)\
+                or (dir_y == 2 and self.board[old_x + 1][old_y + 1] == BLACK_KING)
             # else, it is a regular black capture move, check if it is valid
             elif self.board[old_x][old_y] == BLACK_KING or\
                 self.board[old_x][old_y] == BLACK:
@@ -290,7 +272,9 @@ class GAME():
                 self.board[old_x][old_y] == RED:
                 return (dir_y == -2 and\
                     self.board[old_x - 1][old_y - 1] == BLACK) or\
-                        (dir_y == 2 and self.board[old_x-1][old_y+1] == BLACK)
+                        (dir_y == 2 and self.board[old_x-1][old_y+1] == BLACK)\
+                    or (dir_y == -2 and self.board[old_x-1][old_y-1] == BLACK_KING)\
+                    or (dir_y == 2 and self.board[old_x-1][old_y+1] == BLACK_KING)
         else:
             return False
 
@@ -315,32 +299,3 @@ class GAME():
                 if self.board[i][j] == value or self.board[i][j] == King:
                     pos.append([i, j])
         return pos
-
-    
-    # def __str__(self):
-    #     '''
-    #         Method -- __str__
-    #             Creates a string representation of the GAME_BOARD
-    #         Parameter:
-    #             self -- The current game board object
-    #         Returns:
-    #             A string representation of the GAME_BOARD.
-    #     '''
-        
-    #     for i in range(len(self.board)):
-    #         for j in range(len(len(self.board))):
-    #             self.board[i][j] = self.board[i][j].color
-    #     return self.board
-
-    
-
-
-        
-
-def main():
-    game = GAME()
-    print(game.board)
-    print(game.possible_move())
-
-if __name__ == "__main__":
-    main()

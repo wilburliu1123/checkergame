@@ -9,8 +9,7 @@ from game import *
 from game_UI import *
 
 def main():
-    GAME()
-
+    Game_UI()
 
 
 if __name__ == "__main__":
