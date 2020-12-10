@@ -8,13 +8,14 @@ state of the game. State of the game will be used to evaluate wether user has
 won or not. There will also be functions that determine if a move is valid
 or not.
 '''
-NUM_SQUARES = 8 # The number of squares on each row.
-ROW = 3 # we need three rows of pieces for each player
+NUM_SQUARES = 8  # The number of squares on each row.
+ROW = 3  # we need three rows of pieces for each player
 PIECE_COLORS = ("king", "black", "red")
 BLACK = 1
 RED = 2
 BLACK_KING = 3
 RED_KING = 4
+
 
 class GAME():
 
@@ -39,7 +40,6 @@ class GAME():
         self.move_success = False
         self.possible_capture_move = False
 
-
     def init_board(self):
         '''
             Function init_board:
@@ -61,12 +61,11 @@ class GAME():
                     cur_row.append(0)
             board.append(cur_row)
         return board
-    
 
     def switch_turn(self):
         '''
             Function switch_turn
-                This function will change turns based on current state. If 
+                This function will change turns based on current state. If
                 Player is playing black piece and finished move, switch to red
                 Vise versa.
             Parameters:
@@ -78,7 +77,6 @@ class GAME():
             self.player_turn = RED
         else:
             self.player_turn = BLACK
-    
 
     def player_can_continue(self):
         '''
@@ -97,7 +95,6 @@ class GAME():
         else:
             return True
 
-
     def get_player_turn(self):
         '''
             Function get_player_turn:
@@ -108,7 +105,6 @@ class GAME():
                 player turn for current game
         '''
         return self.player_turn
-
 
     def move(self, old_x, old_y, x, y):
         '''
@@ -148,8 +144,6 @@ class GAME():
             elif piece == RED or piece == RED_KING:
                 self.red_piece -= 1
             self.possible_move()
-    
-
 
     def possible_move(self):
         '''
@@ -187,29 +181,30 @@ class GAME():
                 capture_direction.append([2, -2])
                 capture_direction.append([2, 2])
             for dir in reg_direction:
-                if self.is_valid_move(pos_x, pos_y, pos_x+dir[0], pos_y+dir[1]):
-                    reg_moves.append([pos_x, pos_y, pos_x+dir[0],pos_y+dir[1]])
+                if self.is_valid_move(pos_x, pos_y, pos_x+dir[0],
+                                      pos_y+dir[1]):
+                    reg_moves.append([pos_x, pos_y,
+                                      pos_x+dir[0], pos_y+dir[1]])
             for dir in capture_direction:
-                if self.is_valid_move(pos_x, pos_y, pos_x+dir[0], pos_y+dir[1]):
-                    capture_moves.append([pos_x, pos_y, pos_x+dir[0], \
-                        pos_y + dir[1]])
+                if self.is_valid_move(pos_x, pos_y, pos_x+dir[0],
+                                      pos_y+dir[1]):
+                    capture_moves.append([pos_x, pos_y, pos_x+dir[0],
+                                          pos_y + dir[1]])
         if capture_moves:
             print("A capture is possible, and it must be made!")
             print("capture_moves:")
             for cap_move in capture_moves:
-                print("from [{},{}], to [{}, {}]: ".format(cap_move[0],\
-                    cap_move[1], cap_move[2], cap_move[3]))
+                print("from [{},{}], to [{},{}]: ".format(
+                    cap_move[0], cap_move[1], cap_move[2], cap_move[3]))
             self.possible_capture_move = True
             return capture_moves
         else:
             print("reg_moves:")
             for reg_move in reg_moves:
-                print("from [{},{}], to [{}, {}]: ".format(reg_move[0],\
-                    reg_move[1], reg_move[2], reg_move[3]))
+                print("from [{},{}], to [{},{}]: ".format(
+                    reg_move[0], reg_move[1], reg_move[2], reg_move[3]))
             self.possible_capture_move = False
             return reg_moves
-
-            
 
     def is_valid_move(self, old_x, old_y, x, y):
         '''
@@ -233,48 +228,59 @@ class GAME():
             return False
         # if it is regular move
         if dir_x == 1:
-            return (self.board[old_x][old_y] == BLACK or\
-                self.board[old_x][old_y] == BLACK_KING\
-                or self.board[old_x][old_y] == RED_KING) and abs(dir_y) == 1
+            return (self.board[old_x][old_y] == BLACK or
+                    self.board[old_x][old_y] == BLACK_KING or
+                    self.board[old_x][old_y] == RED_KING) and abs(dir_y) == 1
         if dir_x == -1:
-            return (self.board[old_x][old_y] == RED or\
-                self.board[old_x][old_y] == RED_KING\
-                or self.board[old_x][old_y] == BLACK_KING) and abs(dir_y) == 1
+            return (self.board[old_x][old_y] == RED or
+                    self.board[old_x][old_y] == RED_KING or
+                    self.board[old_x][old_y] == BLACK_KING) and abs(dir_y) == 1
         # if it is a capture move, check if it is a valid capture move
         elif dir_x == 2:
             # upward capture move, if it is a red king, check if it is valid
             if self.board[old_x][old_y] == RED_KING:
-                return (dir_y == -2 and\
-                    self.board[old_x + 1][old_y - 1] == BLACK)\
-                or (dir_y == 2 and self.board[old_x + 1][old_y + 1] == BLACK)\
-                or (dir_y == -2 and self.board[old_x + 1][old_y - 1] == BLACK_KING)\
-                or (dir_y == 2 and self.board[old_x + 1][old_y + 1] == BLACK_KING)
+                return (dir_y == -2 and
+                        self.board[old_x + 1][old_y - 1] == BLACK)\
+                    or (dir_y == 2 and
+                        self.board[old_x + 1][old_y + 1] == BLACK)\
+                    or (dir_y == -2 and
+                        self.board[old_x + 1][old_y - 1] == BLACK_KING)\
+                    or (dir_y == 2 and
+                        self.board[old_x + 1][old_y + 1] == BLACK_KING)
             # else, it is a regular black capture move, check if it is valid
-            elif self.board[old_x][old_y] == BLACK_KING or\
-                self.board[old_x][old_y] == BLACK:
-                return (dir_y == -2 and\
-                    self.board[old_x + 1][old_y - 1] == RED) or\
-                        (dir_y == 2 and\
+            elif self.board[old_x][old_y] == BLACK_KING or \
+                    self.board[old_x][old_y] == BLACK:
+                return (dir_y == -2 and
+                        self.board[old_x + 1][old_y - 1] == RED) or\
+                        (dir_y == 2 and
                             self.board[old_x + 1][old_y + 1] == RED) or\
-                    (dir_y == -2 and self.board[old_x + 1][old_y - 1] == RED_KING) or\
-                    (dir_y == 2 and self.board[old_x + 1][old_y + 1] == RED_KING)
+                        (dir_y == -2 and
+                            self.board[old_x + 1][old_y - 1] == RED_KING) or\
+                        (dir_y == 2 and
+                            self.board[old_x + 1][old_y + 1] == RED_KING)
         # if it is a downward capture move, check if it is a valid one
         elif dir_x == -2:
             # if it is a black king, check if it is valid
             if self.board[old_x][old_y] == BLACK_KING:
-                return (dir_y == -2 and\
-                    self.board[old_x - 1][old_y - 1] == RED)\
-                or (dir_y == 2 and self.board[old_x - 1][old_y + 1] == RED)\
-                or (dir_y == -2 and self.board[old_x-1][old_y-1] == RED_KING)\
-                or (dir_y == 2 and self.board[old_x-1][old_y+1] == RED_KING)
+                return (dir_y == -2 and
+                        self.board[old_x - 1][old_y - 1] == RED) or\
+                        (dir_y == 2 and
+                            self.board[old_x - 1][old_y + 1] == RED) or\
+                        (dir_y == -2 and
+                            self.board[old_x-1][old_y-1] == RED_KING) or\
+                        (dir_y == 2 and
+                            self.board[old_x-1][old_y+1] == RED_KING)
             # if it is a reg red capture move, check if it is valid
             elif self.board[old_x][old_y] == RED_KING or\
-                self.board[old_x][old_y] == RED:
-                return (dir_y == -2 and\
-                    self.board[old_x - 1][old_y - 1] == BLACK) or\
-                        (dir_y == 2 and self.board[old_x-1][old_y+1] == BLACK)\
-                    or (dir_y == -2 and self.board[old_x-1][old_y-1] == BLACK_KING)\
-                    or (dir_y == 2 and self.board[old_x-1][old_y+1] == BLACK_KING)
+                    self.board[old_x][old_y] == RED:
+                return (dir_y == -2 and
+                        self.board[old_x - 1][old_y - 1] == BLACK) or\
+                        (dir_y == 2 and
+                            self.board[old_x-1][old_y+1] == BLACK) or\
+                        (dir_y == -2 and
+                            self.board[old_x-1][old_y-1] == BLACK_KING) or\
+                        (dir_y == 2 and
+                            self.board[old_x-1][old_y+1] == BLACK_KING)
         else:
             return False
 

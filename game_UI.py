@@ -1,18 +1,21 @@
-import turtle, math
+import turtle
+import math
 from game import *
 import random
-NUM_SQUARES = 8 # The number of squares on each row.
-SQUARE = 50 # The size of each square in the checkerboard.
+NUM_SQUARES = 8  # The number of squares on each row.
+SQUARE = 50  # The size of each square in the checkerboard.
 SQUARE_COLORS = ("light gray", "white")
 PIECE_COLOR = ("BLACK", "RED")
 BOARD_SIZE = NUM_SQUARES * SQUARE
 CORNER = -BOARD_SIZE / 2
-ROW = 3 # Three row for each play's pieces
+ROW = 3  # Three row for each play's pieces
 BLACK = 1
 RED = 2
 BLACK_KING = 3
 RED_KING = 4
 MOVED = False
+
+
 class Game_UI():
     '''
         class Game_UI
@@ -28,6 +31,7 @@ class Game_UI():
         self.board = self.game.board
         self.game_over = False
         self.init_board()
+
     def init_board(self):
         '''
             Function init_board:
@@ -37,21 +41,22 @@ class Game_UI():
             Returns:
                 None. Draw the game by turtle
         '''
-        self.window_size = BOARD_SIZE + SQUARE # The extra + SQUARE is the margin
+        # The extra + SQUARE is the margin
+        self.window_size = BOARD_SIZE + SQUARE
         self.turtle.setup(self.window_size, self.window_size)
         # Set the drawing canvas size. The should be actual board size
         self.turtle.screensize(BOARD_SIZE, BOARD_SIZE)
-        self.turtle.bgcolor("white") # The window's background color
-        self.turtle.tracer(0, 0) # makes the drawing appear immediately
+        self.turtle.bgcolor("white")  # The window's background color
+        self.turtle.tracer(0, 0)  # makes the drawing appear immediately
         self.pen = turtle.Turtle()
         self.pen.penup()
         self.update_board()
         self.piece_selected = False
-        self.clicked_at = {"row" : 0, "col" : 0, "piece" : None}
+        self.clicked_at = {"row": 0, "col": 0, "piece": None}
         self.screen = turtle.Screen()
-        self.screen.onclick(self.click_handler) # This will call call the click_handler function when a click occurs
-        self.turtle.done() # Stops the window from closing.
-
+        # This will call call the click_handler function when a click occurs
+        self.screen.onclick(self.click_handler)
+        self.turtle.done()  # Stops the window from closing.
 
     def update_board(self):
         '''
@@ -71,6 +76,7 @@ class Game_UI():
                 else:
                     self.draw_square(self.pen, "black", SQUARE, i, j)
                     self.draw_piece(self.pen, "black", i, j)
+
     def draw_square(self, a_turtle, color, size, x, y):
         '''
             Method -- draw_square
@@ -84,7 +90,7 @@ class Game_UI():
                 Nothing. Draws a square on the graphics window. (On the Board)
         '''
         a_turtle.color(color, self.get_back_ground_color(x, y))
-        pos = self.convert_index_to_coordinates(x , y)
+        pos = self.convert_index_to_coordinates(x, y)
         pos_x = pos[0]
         pos_y = pos[1]
         a_turtle.setposition(pos_x, pos_y)
@@ -96,7 +102,6 @@ class Game_UI():
             a_turtle.left(RIGHT_ANGLE)
         a_turtle.end_fill()
         a_turtle.penup()
-    
 
     def convert_index_to_coordinates(self, x, y):
         '''
@@ -114,7 +119,6 @@ class Game_UI():
         y_pos = CORNER + x * SQUARE
         x_pos = CORNER + y * SQUARE
         return [x_pos, y_pos]
-
 
     def convert_coordinates_to_index(self, x, y):
         '''
@@ -134,11 +138,10 @@ class Game_UI():
         else:
             return []
 
-
-    def get_back_ground_color(self, x,y):
+    def get_back_ground_color(self, x, y):
         '''
             Function get_back_ground_color:
-                This Function will return the back ground color of the squre 
+                This Function will return the back ground color of the squre
                 from given x and y position
             Parameters:
                 x -- row index for current piece
@@ -150,7 +153,6 @@ class Game_UI():
             return "light grey"
         else:
             return "white"
-    
 
     def draw_piece(self, a_turtle, color, x, y):
         '''
@@ -189,8 +191,8 @@ class Game_UI():
     def draw_circle(self, a_turtle, radius):
         '''
             Function -- draw_circle
-                This Function will draw a circle and fill with the color that come
-                with turtle's color
+                This Function will draw a circle and fill with the color that
+                come with turtle's color
             Parameter:
                 a_turtle -- an instance of Turtle
                 radius -- radius of the circle
@@ -202,7 +204,6 @@ class Game_UI():
         a_turtle.circle(radius)
         a_turtle.end_fill()
         a_turtle.penup()
-    
 
     def highlight(self, x, y):
         '''
@@ -271,19 +272,18 @@ class Game_UI():
                 new_x = x + reg[0]
                 new_y = y + reg[1]
                 if x == potential[0] and y == potential[1] and\
-                    new_x == potential[2] and new_y == potential[3]:
+                   new_x == potential[2] and new_y == potential[3]:
                     reg_move.append([new_x, new_y])
             for cap in cap_dir:
                 new_x = x + cap[0]
                 new_y = y + cap[1]
                 if x == potential[0] and y == potential[1] and\
-                    new_x == potential[2] and new_y == potential[3]:
+                   new_x == potential[2] and new_y == potential[3]:
                     cap_move.append([new_x, new_y])
         if cap_move:
             return cap_move
         else:
             return reg_move
-
 
     def computer_move(self):
         '''
@@ -311,26 +311,26 @@ class Game_UI():
             Function -- click_handler
                 Called when a click occurs.
             Parameters:
-                x -- X coordinate of the click. Automatically provided by Turtle.
-                y -- Y coordinate of the click. Automatically provided by Turtle.
+                x -- X coordinate of the click.
+                    Automatically provided by Turtle.
+                y -- Y coordinate of the click.
+                    Automatically provided by Turtle.
             Returns:
-                Does not and should not return. Click handlers are a special type
-                of function automatically called by Turtle. You will not have
-                access to anything returned by this function.
+                Does not and should not return. Click handlers are a special
+                type of function automatically called by Turtle. You will not
+                have access to anything returned by this function.
         '''
         if self.game_over:
             return
         pos = self.convert_coordinates_to_index(x, y)
-        if (len(pos) != 0):
-            print("Clicked at ", math.floor(y / 50)+4, math.floor(x / 50)+4)
-        else:
+        if (len(pos) == 0):
             print("invalid click")
             return
         if not self.piece_selected:
             # if current clicked position is current player's piece, save to
             # clicked_at data
             if self.board[pos[0]][pos[1]] == self.game.player_turn or\
-                self.board[pos[0]][pos[1]] == self.game.player_turn + 2:
+               self.board[pos[0]][pos[1]] == self.game.player_turn + 2:
                 self.clicked_at["row"] = pos[0]
                 self.clicked_at["col"] = pos[1]
                 self.highlight(pos[0], pos[1])
@@ -338,15 +338,12 @@ class Game_UI():
         else:
             old_x = self.clicked_at["row"]
             old_y = self.clicked_at["col"]
-            print("{} of{} ", old_x, old_y)
-            print(self.game.possible_move())
             self.unhighlight(old_x, old_y)
             self.game.move(old_x, old_y, pos[0], pos[1])
             # if there is capture move availble, keep the user's turn until
             # if move was successful, update board on UI
             if (self.game.move_success):
                 # clear the square if check move is made
-                print(abs(pos[0] - old_x))
                 self.update_move(old_x, old_y, pos[0], pos[1])
                 if not self.game.possible_capture_move:
                     self.game.switch_turn()
@@ -358,15 +355,15 @@ class Game_UI():
                 if (self.game.red_piece != 0):
                     self.write_try_again()
                     print("Game over. Try again")
-                else:
-                    print("Game over. You win!")
                 self.game_over = True
                 break
-            self.game.move(computer_choice[0], computer_choice[1],\
-                computer_choice[2], computer_choice[3])
-            self.update_move(computer_choice[0], computer_choice[1], computer_choice[2], computer_choice[3])
-            if not self.game.possible_capture_move or len(computer_choice) == 0:
-                    self.game.switch_turn()
+            self.game.move(computer_choice[0], computer_choice[1],
+                           computer_choice[2], computer_choice[3])
+            self.update_move(computer_choice[0], computer_choice[1],
+                             computer_choice[2], computer_choice[3])
+            if not self.game.possible_capture_move or\
+                    len(computer_choice) == 0:
+                self.game.switch_turn()
         print("red piece left:" + str(self.game.red_piece))
         print("black piece left: " + str(self.game.black_piece))
         if self.game.red_piece == 0:
@@ -382,7 +379,6 @@ class Game_UI():
             print("Game Over, try again!")
             self.game_over = True
         return
-
 
     def write_lose(self):
         '''
@@ -407,7 +403,6 @@ class Game_UI():
         self.pen.setposition(pos_x, pos_y)
         self.pen.write('You lose!', font=style)
 
-
     def write_win(self):
         '''
             Method write_win:
@@ -430,7 +425,6 @@ class Game_UI():
         pos_y = pos[1]
         self.pen.setposition(pos_x, pos_y)
         self.pen.write('You win!', font=style)
-    
 
     def write_try_again(self):
         '''
@@ -469,9 +463,8 @@ class Game_UI():
                 None. Update the move on the board
         '''
         if abs(x - old_x) == 2:
-            self.draw_square(self.pen, "black", SQUARE, (old_x + x) // 2, (old_y + y) // 2)
-            print((old_x + x) // 2, (old_y + y) // 2)
+            self.draw_square(self.pen, "black", SQUARE,
+                             (old_x + x) // 2, (old_y + y) // 2)
         self.draw_square(self.pen, "black", SQUARE, old_x, old_y)
         self.draw_square(self.pen, "black", SQUARE, x, y)
         self.draw_piece(self.pen, "black", x, y)
-
