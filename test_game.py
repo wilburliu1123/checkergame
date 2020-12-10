@@ -1,5 +1,6 @@
 from game import *
 
+
 def test_constructor():
     game = GAME()
     assert(game.board[7][0] == RED)
@@ -23,11 +24,13 @@ def test_switch_turn():
     game.switch_turn()
     assert(game.player_turn == RED)
 
+
 def test_get_player_turn():
     game = GAME()
     assert(game.get_player_turn() == BLACK)
     game.switch_turn()
     assert(game.get_player_turn() == RED)
+
 
 def test_player_can_continue():
     game = GAME()
@@ -72,7 +75,7 @@ def test_move():
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
             ]
-    game.move(2,7,4,5)
+    game.move(2, 7, 4, 5)
     assert(game.board[4][5] == 1)
     assert(game.board[3][6] == 0)
     assert(game.move_success)
@@ -94,6 +97,7 @@ def test_possible_move():
     assert(len(game.possible_move()) == 1)
     assert(game.possible_capture_move)
 
+
 def test_is_valid_move():
     game = GAME()
     game.board = [
@@ -106,15 +110,15 @@ def test_is_valid_move():
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
             ]
-    assert(not game.is_valid_move(0,0,1,1))
-    assert(game.is_valid_move(2,7,4,5))
+    assert(not game.is_valid_move(0, 0, 1, 1))
+    assert(game.is_valid_move(2, 7, 4, 5))
     game.switch_turn()
-    assert(not game.is_valid_move(1,6,2,7))
+    assert(not game.is_valid_move(1, 6, 2, 7))
 
 
 def test_get_pieces_pos():
     game = GAME()
-    game.board =  [
+    game.board = [
                 [2, 0, 0, 0, 0, 2, 0, 0],
                 [0, 0, 0, 0, 0, 0, 2, 0],
                 [0, 0, 0, 0, 0, 0, 0, 1],
@@ -124,14 +128,14 @@ def test_get_pieces_pos():
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
             ]
-    assert(game.get_pieces_pos() == [[2,7]])
+    assert(game.get_pieces_pos() == [[2, 7]])
     game.switch_turn()
-    assert(game.get_pieces_pos() == [[0,0], [0,5], [1,6], [3,6]])
+    assert(game.get_pieces_pos() == [[0, 0], [0, 5], [1, 6], [3, 6]])
 
 
 def test_king_upgrade():
     game = GAME()
-    game.board =  [
+    game.board = [
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
@@ -141,10 +145,10 @@ def test_king_upgrade():
                 [0, 0, 0, 0, 0, 0, 1, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
             ]
-    game.move(6,6,7,7)
+    game.move(6, 6, 7, 7)
     assert(game.board[7][7] == BLACK_KING)
     game.switch_turn()
-    game.board =  [
+    game.board = [
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 2, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
@@ -154,5 +158,5 @@ def test_king_upgrade():
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
             ]
-    game.move(1,5,0,6)
+    game.move(1, 5, 0, 6)
     assert(game.board[0][6] == RED_KING)
