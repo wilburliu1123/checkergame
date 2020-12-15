@@ -133,6 +133,23 @@ def test_get_pieces_pos():
     assert(game.get_pieces_pos() == [[0, 0], [0, 5], [1, 6], [3, 6]])
 
 
+def test_check_possible_capture_move():
+    game = GAME()
+    game.board = [
+                [2, 0, 0, 0, 0, 2, 0, 0],
+                [0, 0, 0, 0, 0, 0, 2, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 2, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 2, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+            ]
+    game.move(2, 7, 4, 5)
+    assert(game.check_possible_capture_move(4, 5) == [[4, 5, 6, 7]])
+    assert(game.player_can_continue())
+
+
 def test_king_upgrade():
     game = GAME()
     game.board = [

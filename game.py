@@ -143,7 +143,44 @@ class GAME():
                 self.black_piece -= 1
             elif piece == RED or piece == RED_KING:
                 self.red_piece -= 1
-            self.possible_move()
+            self.check_possible_capture_move(x, y)
+
+    def check_possible_capture_move(self, x, y):
+        '''
+            Method check_possible_capture_move:
+                This method will check giving x and y position on the board,
+                if there is another capture_move possible, then it will return
+                the possible capture move.
+            Paramerters:
+                self -- current game object
+                x -- x position of current piece
+                y -- y position of current piece
+            Returns:
+                A list of possible move of current piece, [] if there is no
+                capture move possible
+        '''
+        black_cap_dir = [[2, -2], [2, 2]]
+        red_cap_dir = [[-2, -2], [-2, 2]]
+        cap_move = []
+        if self.board[x][y] == BLACK_KING:
+            black_cap_dir.append(red_cap_dir[0])
+            black_cap_dir.append(red_cap_dir[1])
+        if self.board[x][y] == RED_KING:
+            red_cap_dir.append(black_cap_dir[0])
+            red_cap_dir.append(black_cap_dir[1])
+        if self.board[x][y] == BLACK or self.board[x][y] == BLACK_KING:
+            for dir in black_cap_dir:
+                if (self.is_valid_move(x, y, x + dir[0], y + dir[1])):
+                    cap_move.append([x, y, x + dir[0], y + dir[1]])
+        if self.board[x][y] == RED or self.board[x][y] == RED_KING:
+            for dir in red_cap_dir:
+                if (self.is_valid_move(x, y, x + dir[0], y + dir[1])):
+                    cap_move.append([x, y, x + dir[0], y + dir[1]])
+        if cap_move:
+            self.possible_capture_move = True
+        else:
+            self.possible_capture_move = False
+        return cap_move
 
     def possible_move(self):
         '''

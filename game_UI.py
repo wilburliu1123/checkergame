@@ -361,8 +361,7 @@ class Game_UI():
                            computer_choice[2], computer_choice[3])
             self.update_move(computer_choice[0], computer_choice[1],
                              computer_choice[2], computer_choice[3])
-            if not self.game.possible_capture_move or\
-                    len(computer_choice) == 0:
+            if not self.game.possible_capture_move:
                 self.game.switch_turn()
         print("red piece left:" + str(self.game.red_piece))
         print("black piece left: " + str(self.game.black_piece))
